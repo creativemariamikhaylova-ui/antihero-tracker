@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ДНЕВНИК АНТИГЕРОЯ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0D0303;
+            font-family: 'Montserrat', system-ui, sans-serif;
+            padding: 20px 16px 40px;
+            color: #EFF8FF;
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 0.85;
+            margin-right: 12px;
+        }
+        .logo-row {
+            display: flex;
+            gap: 2px;
+        }
+        .logo-char {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #BBEF1F;
+        }
+
+        .hero {
+            border-left: 6px solid #BBEF1F;
+            padding-left: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hero h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #BBEF1F;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero p {
+            font-size: 0.65rem;
+            color: #FF0055;
+            margin-top: 4px;
+        }
+
+        .motivation {
+            background: #1a0505;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            border-left: 3px solid #BBEF1F;
+            font-size: 0.8rem;
+        }
+
+        .month-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a0505;
+            padding: 10px 16px;
+            margin-bottom: 24px;
+            border-left: 4px solid #FF0055;
+        }
+
+        .month-nav button {
+            background: transparent;
+            border: 1px solid #BBEF1F;
+            color: #BBEF1F;
+            padding: 8px 20px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Montserrat';
+            font-size: 1rem;
+        }
+
+        .month-nav button:active {
+            background: #BBEF1F;
+            color: #0D0303;
+        }
+
+        .month-label {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #FF0055;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: #1a0505;
+            padding: 12px 8px;
+            text-align: center;
+            border-left: 3px solid #BBEF1F;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #BBEF1F;
+            text-shadow: 0 0 5px #BBEF1F;
+        }
+
+        .stat-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: #FF0055;
+            letter-spacing: 1px;
+        }
+
+        .trackers-row {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        @media (min-width: 900px) {
+            .trackers-row {
+                flex-direction: row;
+                gap: 20px;
+            }
+        }
+
+        .tracker-block {
+            flex: 1;
+            background: #0a0303;
+            border: 1px solid #2a0a0a;
+            padding: 14px 12px 18px;
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #FF0055;
+            padding-bottom: 8px;
+        }
+
+        .block-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .block-badge {
+            font-size: 0.6rem;
+            background: #1f0808;
+            padding: 2px 8px;
+            color: #BBEF1F;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .weekday {
+            font-size: 0.55rem;
+            text-align: center;
+            color: #FF0055;
+            font-weight: 600;
+            padding: 4px 0;
+        }
+
+        .mini-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .day-tile {
+            aspect-ratio: 1 / 1;
+            background: #120606;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: 1px solid #2f1212;
+            transition: 0.05s linear;
+        }
+
+        .day-tile.active {
+            background: #BBEF1F;
+            color: #0D0303;
+            font-weight: 800;
+            box-shadow: 0 0 6px #BBEF1F;
+        }
+
+        .day-tile.empty {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .day-tile.has-note {
+            border-bottom: 3px solid #FF0055;
+        }
+
+        .day-tile:active {
+            transform: scale(0.95);
+        }
+
+        .chart-container {
+            background: #0a0303;
+            border: 1px solid #2a0a0a;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .chart-header {
+            margin-bottom: 16px;
+            font-size: 0.7rem;
+            color: #FF0055;
+            border-left: 3px solid #BBEF1F;
+            padding-left: 10px;
+            letter-spacing: 1px;
+        }
+
+        .chart-bars-wrapper {
+            overflow-x: auto;
+        }
+
+        .chart-bars {
+            display: flex;
+            gap: 4px;
+            min-width: 500px;
+        }
+
+        .chart-column {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stacked-bar {
+            background: #1a0a0a;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            margin-bottom: 5px;
+        }
+
+        .bar-sport { background: #BBEF1F; width: 100%; }
+        .bar-smoke { background: #FF0055; width: 100%; }
+        .bar-drink { background: #EFF8FF; width: 100%; opacity: 0.8; }
+
+        .ex-bars {
+            display: flex;
+            gap: 8px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .ex-group {
+            flex: 1;
+            text-align: center;
+            min-width: 50px;
+        }
+
+        .ex-bar-bg {
+            background: #1a0a0a;
+            height: 80px;
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 5px;
+        }
+
+        .ex-bar {
+            background: #BBEF1F;
+            width: 100%;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(53, 1fr);
+            gap: 2px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .heat-cell {
+            aspect-ratio: 1 / 1;
+            background: #1a1a1a;
+        }
+
+        .heat-cell[data-level="1"] { background: #2a6b2a; }
+
+        /* МОДАЛЬНОЕ ОКНО — ИСПРАВЛЕНО */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.96);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #0a0303;
+            border: 2px solid #BBEF1F;
+            width: 90%;
+            max-width: 400px;
+            padding: 24px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            color: #BBEF1F;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .exercise-list {
+            margin-bottom: 16px;
+        }
+
+        .exercise-item {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            gap: 12px;
+        }
+
+        .exercise-item input {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #BBEF1F;
+            margin: 0;
+        }
+
+        .exercise-item label {
+            font-size: 0.9rem;
+            color: #EFF8FF;
+        }
+
+        .custom-input {
+            width: 100%;
+            background: #1a0505;
+            border: 1px solid #FF0055;
+            color: white;
+            padding: 10px;
+            margin: 16px 0;
+            font-family: 'Montserrat';
+        }
+
+        .just-sport {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 16px 0;
+            padding: 12px 0;
+            border-top: 1px solid #2a0a0a;
+            border-bottom: 1px solid #2a0a0a;
+        }
+
+        .just-sport input {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #BBEF1F;
+            margin: 0;
+        }
+
+        .just-sport label {
+            font-size: 0.85rem;
+            color: #BBEF1F;
+        }
+
+        .note-input {
+            width: 100%;
+            background: #1a0505;
+            border: 1px solid #FF0055;
+            color: white;
+            padding: 10px;
+            margin: 16px 0;
+            font-family: 'Montserrat';
+            resize: vertical;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            background: transparent;
+            border: 1px solid #BBEF1F;
+            color: #BBEF1F;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .modal-buttons button:active {
+            background: #BBEF1F;
+            color: #0D0303;
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 2px solid #FF0055;
+            color: #FF0055;
+            padding: 12px;
+            width: 100%;
+            font-weight: 700;
+            margin-top: 24px;
+            cursor: pointer;
+        }
+
+        .reset-btn:active {
+            background: #FF0055;
+            color: #0D0303;
+        }
+
+        footer {
+            font-size: 0.5rem;
+            text-align: center;
+            margin-top: 24px;
+            color: #552222;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <div class="hero">
+        <div class="logo">
+            <div class="logo-row"><span class="logo-char">+</span><span class="logo-char">+</span><span class="logo-char">+</span></div>
+            <div class="logo-row"><span class="logo-char">+</span><span class="logo-char">+</span><span class="logo-char">+</span></div>
+            <div class="logo-row"><span class="logo-char">+</span><span class="logo-char">+</span><span class="logo-char">+</span></div>
+        </div>
+        <div>
+            <h1>ДНЕВНИК АНТИГЕРОЯ</h1>
+            <p>ТВЁРДЫЙ ВХОД · НИКОТИН-ПЕРЕРЫВ · ЖИДКИЙ ВАЙБ</p>
+        </div>
+    </div>
+
+    <div class="motivation" id="motivationText">[ ЗАГРУЗКА... ]</div>
+
+    <div class="stats-panel" id="statsPanel"></div>
+
+    <div class="month-nav">
+        <button id="prevMonthBtn">◀</button>
+        <span class="month-label" id="monthYearLabel"></span>
+        <button id="nextMonthBtn">▶</button>
+    </div>
+
+    <div class="trackers-row" id="trackersContainer"></div>
+
+    <div class="chart-container">
+        <div class="chart-header">[ СОВМЕЩЁННЫЙ ГРАФИК / 30 ДНЕЙ ]</div>
+        <div class="chart-bars-wrapper"><div class="chart-bars" id="combinedChart"></div></div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-header">[ УПРАЖНЕНИЯ / 30 ДНЕЙ ]</div>
+        <div class="ex-bars" id="exercisesChart"></div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-header">[ ТЕПЛОВАЯ КАРТА / ГОД ]</div>
+        <div class="heatmap" id="heatmap"></div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-header">[ СРАВНЕНИЕ МЕСЯЦЕВ ]</div>
+        <div class="chart-bars-wrapper"><div class="chart-bars" id="monthCompare"></div></div>
+    </div>
+
+    <button class="reset-btn" id="exportBtn">[ ЭКСПОРТ ДАННЫХ ]</button>
+    <button class="reset-btn" id="importBtn">[ ИМПОРТ ДАННЫХ ]</button>
+    <button class="reset-btn" id="hardResetBtn">[ СБРОСИТЬ ВСЁ ]</button>
+    <footer>клик по дню в ТВЁРДОМ ВХОДЕ — выбор упражнений</footer>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО — ИСПРАВЛЕНА ВЁРСТКА -->
+<div id="sportModal" class="modal">
+    <div class="modal-content">
+        <h3>ТВЁРДЫЙ ВХОД</h3>
+        <div class="exercise-list">
+            <div class="exercise-item">
+                <input type="checkbox" id="ex_press">
+                <label>ПРЕСС</label>
+            </div>
+            <div class="exercise-item">
+                <input type="checkbox" id="ex_arms">
+                <label>РУКИ</label>
+            </div>
+            <div class="exercise-item">
+                <input type="checkbox" id="ex_pullups">
+                <label>ПОДТЯГИВАНИЯ</label>
+            </div>
+            <div class="exercise-item">
+                <input type="checkbox" id="ex_legs">
+                <label>НОГИ</label>
+            </div>
+            <div class="exercise-item">
+                <input type="checkbox" id="ex_cardio">
+                <label>КАРДИО</label>
+            </div>
+        </div>
+        
+        <input type="text" id="customEx" class="custom-input" placeholder="СВОЁ">
+        
+        <div class="just-sport">
+            <input type="checkbox" id="justSportCheck">
+            <label>БЫЛА ТРЕНИРОВКА (БЕЗ ДЕТАЛЕЙ)</label>
+        </div>
+        
+        <textarea id="dayNote" class="note-input" rows="2" placeholder="заметка..."></textarea>
+        
+        <div class="modal-buttons">
+            <button id="saveSportBtn">СОХРАНИТЬ</button>
+            <button id="closeModalBtn">ОТМЕНА</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let globalData = new Map();
+    let achievementsUnlocked = new Set();
+
+    const ACHIEVEMENTS = {
+        firstSport: { name: "ПЕРВЫЙ ШАГ", points: 10 },
+        streak3: { name: "НАЧИНАЮЩИЙ", points: 20 },
+        streak7: { name: "ЖЕЛЕЗНЫЙ", points: 50 },
+        streak30: { name: "БЕССМЕРТНЫЙ", points: 200 },
+        month10: { name: "СТАРАТЕЛЬ", points: 30 },
+        allExercises: { name: "КОМБО-ДЕНЬ", points: 15 }
+    };
+
+    const MOTIVATION = [
+        "СЕГОДНЯ ТЫ МОЖЕШЬ БОЛЬШЕ",
+        "ТВЁРДЫЙ ВХОД — МЯГКАЯ ЖИЗНЬ",
+        "СЕРИЯ НЕ РВЁТСЯ САМА",
+        "ГЕРОЙ НЕ ТОТ, КТО НЕ ПАДАЕТ"
+    ];
+
+    function dateKey(d) {
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function loadData() {
+        const raw = localStorage.getItem('antihero_v10');
+        if (raw) {
+            try {
+                const obj = JSON.parse(raw);
+                globalData.clear();
+                for (const [k, v] of Object.entries(obj)) globalData.set(k, v);
+            } catch(e) {}
+        }
+        const achRaw = localStorage.getItem('achievements_v10');
+        if (achRaw) achievementsUnlocked = new Set(JSON.parse(achRaw));
+    }
+
+    function saveData() {
+        const obj = {};
+        for (const [k, v] of globalData.entries()) obj[k] = v;
+        localStorage.setItem('antihero_v10', JSON.stringify(obj));
+        localStorage.setItem('achievements_v10', JSON.stringify([...achievementsUnlocked]));
+    }
+
+    function getEntry(dateStr) {
+        return globalData.get(dateStr) || { sport: false, sportDetails: {}, nicotine: false, alcohol: false, note: "" };
+    }
+
+    function setEntry(dateStr, entry) {
+        globalData.set(dateStr, entry);
+        saveData();
+    }
+
+    function getStatus(dateStr, cat) {
+        const e = getEntry(dateStr);
+        return e[cat] || false;
+    }
+
+    function toggleSimple(dateStr, cat) {
+        const e = getEntry(dateStr);
+        e[cat] = !e[cat];
+        setEntry(dateStr, e);
+        fullRender();
+        checkAchievements();
+    }
+
+    function saveSport(dateStr, details, justSport, note) {
+        const e = getEntry(dateStr);
+        e.sportDetails = details;
+        const hasAny = details.press || details.arms || details.pullups || details.legs || details.cardio || (details.custom && details.custom.trim());
+        e.sport = hasAny || justSport;
+        e.note = note;
+        setEntry(dateStr, e);
+        fullRender();
+        checkAchievements();
+    }
+
+    function getCurrentStreak() {
+        let streak = 0;
+        let today = new Date();
+        for (let i = 0; i < 100; i++) {
+            let d = new Date(today);
+            d.setDate(today.getDate() - i);
+            if (getStatus(dateKey(d), 'sport')) streak++;
+            else break;
+        }
+        return streak;
+    }
+
+    function getMaxStreak() {
+        let maxStreak = 0, current = 0;
+        const dates = [...globalData.keys()].filter(k => globalData.get(k).sport).sort();
+        for (let i = 0; i < dates.length; i++) {
+            if (i === 0) current = 1;
+            else {
+                const diff = (new Date(dates[i]) - new Date(dates[i-1])) / 86400000;
+                current = diff === 1 ? current + 1 : 1;
+            }
+            maxStreak = Math.max(maxStreak, current);
+        }
+        return maxStreak;
+    }
+
+    function getTotalPoints() {
+        let points = [...globalData.values()].filter(v => v.sport).length * 5;
+        for (let a of achievementsUnlocked) {
+            if (ACHIEVEMENTS[a]) points += ACHIEVEMENTS[a].points;
+        }
+        return points;
+    }
+
+    function checkAchievements() {
+        const totalSport = [...globalData.values()].filter(v => v.sport).length;
+        const streak = getCurrentStreak();
+        const maxStreak = getMaxStreak();
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        const monthCount = [...globalData.entries()].filter(([k, v]) => k.startsWith(monthKey) && v.sport).length;
+
+        if (totalSport >= 1 && !achievementsUnlocked.has('firstSport')) { achievementsUnlocked.add('firstSport'); saveData(); alert("🏆 ПЕРВЫЙ ШАГ +10"); }
+        if (streak >= 3 && !achievementsUnlocked.has('streak3')) { achievementsUnlocked.add('streak3'); saveData(); alert("🏆 НАЧИНАЮЩИЙ +20"); }
+        if (maxStreak >= 7 && !achievementsUnlocked.has('streak7')) { achievementsUnlocked.add('streak7'); saveData(); alert("🏆 ЖЕЛЕЗНЫЙ +50"); }
+        if (maxStreak >= 30 && !achievementsUnlocked.has('streak30')) { achievementsUnlocked.add('streak30'); saveData(); alert("🏆 БЕССМЕРТНЫЙ +200"); }
+        if (monthCount >= 10 && !achievementsUnlocked.has('month10')) { achievementsUnlocked.add('month10'); saveData(); alert("🏆 СТАРАТЕЛЬ +30"); }
+    }
+
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth();
+    let currentEditDate = null;
+
+    function openSportModal(dateStr) {
+        currentEditDate = dateStr;
+        const entry = getEntry(dateStr);
+        const details = entry.sportDetails || {};
+        document.getElementById('ex_press').checked = details.press || false;
+        document.getElementById('ex_arms').checked = details.arms || false;
+        document.getElementById('ex_pullups').checked = details.pullups || false;
+        document.getElementById('ex_legs').checked = details.legs || false;
+        document.getElementById('ex_cardio').checked = details.cardio || false;
+        document.getElementById('customEx').value = details.custom || '';
+        document.getElementById('justSportCheck').checked = entry.sport && !Object.keys(details).length;
+        document.getElementById('dayNote').value = entry.note || '';
+        document.getElementById('sportModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('sportModal').style.display = 'none';
+    }
+
+    function saveFromModal() {
+        if (!currentEditDate) return;
+        const details = {
+            press: document.getElementById('ex_press').checked,
+            arms: document.getElementById('ex_arms').checked,
+            pullups: document.getElementById('ex_pullups').checked,
+            legs: document.getElementById('ex_legs').checked,
+            cardio: document.getElementById('ex_cardio').checked,
+            custom: document.getElementById('customEx').value.trim()
+        };
+        const justSport = document.getElementById('justSportCheck').checked;
+        const note = document.getElementById('dayNote').value;
+        saveSport(currentEditDate, details, justSport, note);
+        closeModal();
+    }
+
+    function renderMiniCalendar(cat, year, month, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        
+        const weekdays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+        const weekdaysDiv = document.createElement('div');
+        weekdaysDiv.className = 'weekdays';
+        for (let wd of weekdays) {
+            const wdSpan = document.createElement('div');
+            wdSpan.className = 'weekday';
+            wdSpan.innerText = wd;
+            weekdaysDiv.appendChild(wdSpan);
+        }
+        container.appendChild(weekdaysDiv);
+        
+        const calendarDiv = document.createElement('div');
+        calendarDiv.className = 'mini-calendar';
+        
+        const firstDay = new Date(year, month, 1);
+        let offset = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const prevDays = new Date(year, month, 0).getDate();
+
+        for (let i = 0; i < 42; i++) {
+            let dayNum, isCurrent = true, y = year, m = month;
+            if (i < offset) {
+                isCurrent = false;
+                dayNum = prevDays - (offset - i) + 1;
+                let nm = month - 1, ny = year;
+                if (nm < 0) { nm = 11; ny--; }
+                y = ny; m = nm;
+            } else if (i >= offset + daysInMonth) {
+                isCurrent = false;
+                dayNum = i - (offset + daysInMonth) + 1;
+                let nm = month + 1, ny = year;
+                if (nm > 11) { nm = 0; ny++; }
+                y = ny; m = nm;
+            } else {
+                dayNum = i - offset + 1;
+            }
+            const tile = document.createElement('div');
+            tile.className = 'day-tile';
+            if (!isCurrent) tile.classList.add('empty');
+            const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`;
+            const active = isCurrent && getStatus(ds, cat);
+            if (active) tile.classList.add('active');
+            if (cat === 'sport' && isCurrent && getEntry(ds).note) tile.classList.add('has-note');
+            tile.innerText = dayNum;
+            if (isCurrent) {
+                if (cat === 'sport') {
+                    tile.onclick = () => openSportModal(ds);
+                } else {
+                    tile.onclick = () => toggleSimple(ds, cat);
+                }
+            }
+            calendarDiv.appendChild(tile);
+        }
+        container.appendChild(calendarDiv);
+    }
+
+    function renderCombinedChart() {
+        const container = document.getElementById('combinedChart');
+        container.innerHTML = '';
+        const today = new Date();
+        for (let i = 29; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const ds = dateKey(d);
+            const sport = getStatus(ds, 'sport') ? 1 : 0;
+            const nicotine = getStatus(ds, 'nicotine') ? 1 : 0;
+            const alcohol = getStatus(ds, 'alcohol') ? 1 : 0;
+            const total = sport + nicotine + alcohol || 1;
+            const col = document.createElement('div'); col.className = 'chart-column';
+            const barDiv = document.createElement('div'); barDiv.className = 'stacked-bar';
+            const sBar = document.createElement('div'); sBar.className = 'bar-sport'; sBar.style.height = `${sport / total * 100}%`;
+            const nBar = document.createElement('div'); nBar.className = 'bar-smoke'; nBar.style.height = `${nicotine / total * 100}%`;
+            const aBar = document.createElement('div'); aBar.className = 'bar-drink'; aBar.style.height = `${alcohol / total * 100}%`;
+            barDiv.append(sBar, nBar, aBar);
+            const label = document.createElement('div'); label.style.fontSize = '0.6rem'; label.innerText = `${d.getDate()}/${d.getMonth()+1}`;
+            col.append(barDiv, label);
+            container.appendChild(col);
+        }
+    }
+
+    function renderExercisesChart() {
+        const container = document.getElementById('exercisesChart');
+        const today = new Date();
+        let counts = { press: 0, arms: 0, pullups: 0, legs: 0, cardio: 0, custom: 0 };
+        for (let i = 0; i < 30; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const det = getEntry(dateKey(d)).sportDetails || {};
+            if (det.press) counts.press++;
+            if (det.arms) counts.arms++;
+            if (det.pullups) counts.pullups++;
+            if (det.legs) counts.legs++;
+            if (det.cardio) counts.cardio++;
+            if (det.custom) counts.custom++;
+        }
+        const maxV = Math.max(...Object.values(counts), 1);
+        const labels = { press: 'ПРЕСС', arms: 'РУКИ', pullups: 'ПОДТЯГ', legs: 'НОГИ', cardio: 'КАРДИО', custom: 'СВОЁ' };
+        container.innerHTML = '';
+        for (let k of ['press', 'arms', 'pullups', 'legs', 'cardio', 'custom']) {
+            const g = document.createElement('div'); g.className = 'ex-group';
+            const bg = document.createElement('div'); bg.className = 'ex-bar-bg';
+            const bar = document.createElement('div'); bar.className = 'ex-bar'; bar.style.height = `${(counts[k] / maxV) * 100}%`;
+            bg.appendChild(bar);
+            const label = document.createElement('div'); label.style.fontSize = '0.7rem'; label.innerText = labels[k];
+            const num = document.createElement('div'); num.style.fontSize = '0.6rem'; num.innerText = counts[k];
+            g.append(bg, label, num);
+            container.appendChild(g);
+        }
+    }
+
+    function renderHeatmap() {
+        const container = document.getElementById('heatmap');
+        container.innerHTML = '';
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 1);
+        for (let i = 0; i < 365; i++) {
+            const d = new Date(start);
+            d.setDate(start.getDate() + i);
+            const val = getStatus(dateKey(d), 'sport') ? 1 : 0;
+            const cell = document.createElement('div'); cell.className = 'heat-cell'; cell.setAttribute('data-level', val);
+            container.appendChild(cell);
+        }
+    }
+
+    function renderMonthCompare() {
+        const container = document.getElementById('monthCompare');
+        container.innerHTML = '';
+        const now = new Date();
+        const months = [];
+        for (let i = 5; i >= 0; i--) months.push(new Date(now.getFullYear(), now.getMonth() - i, 1));
+        const maxVal = Math.max(...months.map(m => {
+            let cnt = 0;
+            const days = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
+            for (let d = 1; d <= days; d++) {
+                const ds = `${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                if (getStatus(ds, 'sport')) cnt++;
+            }
+            return cnt;
+        }), 1);
+        for (let m of months) {
+            let cnt = 0;
+            const days = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
+            for (let d = 1; d <= days; d++) {
+                const ds = `${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                if (getStatus(ds, 'sport')) cnt++;
+            }
+            const col = document.createElement('div'); col.className = 'chart-column';
+            const barDiv = document.createElement('div'); barDiv.className = 'stacked-bar';
+            const bar = document.createElement('div'); bar.className = 'bar-sport'; bar.style.height = `${(cnt / maxVal) * 100}%`;
+            barDiv.appendChild(bar);
+            const label = document.createElement('div'); label.style.fontSize = '0.55rem'; label.innerText = `${m.getMonth()+1}/${m.getFullYear()}`;
+            col.append(barDiv, label);
+            container.appendChild(col);
+        }
+    }
+
+    function renderTrackers() {
+        const container = document.getElementById('trackersContainer');
+        const cats = ['sport', 'nicotine', 'alcohol'];
+        const titles = { sport: 'ТВЁРДЫЙ ВХОД +', nicotine: 'НИКОТИН-ПЕРЕРЫВ', alcohol: 'ЖИДКИЙ ВАЙБ' };
+        container.innerHTML = '';
+        for (let cat of cats) {
+            const monthKey = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}`;
+            const monthCount = [...globalData.entries()].filter(([k, v]) => k.startsWith(monthKey) && v[cat]).length;
+            const block = document.createElement('div'); block.className = 'tracker-block';
+            block.innerHTML = `<div class="block-header"><div class="block-title">${titles[cat]}</div><div class="block-badge">месяц: ${monthCount}</div></div>`;
+            const calendarContainer = document.createElement('div');
+            calendarContainer.id = `cal-${cat}`;
+            block.appendChild(calendarContainer);
+            container.appendChild(block);
+        }
+        for (let cat of cats) renderMiniCalendar(cat, currentYear, currentMonth, `cal-${cat}`);
+    }
+
+    function renderStats() {
+        const totalSport = [...globalData.values()].filter(v => v.sport).length;
+        const streak = getCurrentStreak();
+        const maxStreak = getMaxStreak();
+        const points = getTotalPoints();
+        const level = Math.floor(points / 100) + 1;
+        document.getElementById('statsPanel').innerHTML = `
+            <div class="stat-card"><div class="stat-value">${totalSport}</div><div class="stat-label">всего</div></div>
+            <div class="stat-card"><div class="stat-value">${streak}</div><div class="stat-label">серия</div></div>
+            <div class="stat-card"><div class="stat-value">${maxStreak}</div><div class="stat-label">рекорд</div></div>
+            <div class="stat-card"><div class="stat-value">${points}</div><div class="stat-label">очков</div></div>
+            <div class="stat-card"><div class="stat-value">${level}</div><div class="stat-label">уровень</div></div>
+        `;
+    }
+
+    function updateMonthLabel() {
+        const months = ['ЯНВ', 'ФЕВ', 'МАР', 'АПР', 'МАЙ', 'ИЮН', 'ИЮЛ', 'АВГ', 'СЕН', 'ОКТ', 'НОЯ', 'ДЕК'];
+        document.getElementById('monthYearLabel').innerText = `${months[currentMonth]} ${currentYear}`;
+    }
+
+    function exportData() {
+        const dataStr = JSON.stringify(Object.fromEntries(globalData));
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `antihero_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+
+    function importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const obj = JSON.parse(ev.target.result);
+                    globalData.clear();
+                    for (const [k, v] of Object.entries(obj)) globalData.set(k, v);
+                    saveData();
+                    fullRender();
+                    alert('[ ИМПОРТ ВЫПОЛНЕН ]');
+                } catch(e) { alert('[ ОШИБКА ФАЙЛА ]'); }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    function hardReset() {
+        if (confirm('[ СБРОСИТЬ ВСЁ? ]')) {
+            globalData.clear();
+            achievementsUnlocked.clear();
+            saveData();
+            fullRender();
+        }
+    }
+
+    function changeMonth(delta) {
+        let nm = currentMonth + delta, ny = currentYear;
+        if (nm < 0) { nm = 11; ny--; }
+        if (nm > 11) { nm = 0; ny++; }
+        currentYear = ny;
+        currentMonth = nm;
+        fullRender();
+    }
+
+    function fullRender() {
+        renderStats();
+        renderTrackers();
+        renderCombinedChart();
+        renderExercisesChart();
+        renderHeatmap();
+        renderMonthCompare();
+        updateMonthLabel();
+        document.getElementById('motivationText').innerHTML = `[ ${MOTIVATION[Math.floor(Math.random() * MOTIVATION.length)]} ]`;
+    }
+
+    loadData();
+    fullRender();
+
+    document.getElementById('prevMonthBtn').onclick = () => changeMonth(-1);
+    document.getElementById('nextMonthBtn').onclick = () => changeMonth(1);
+    document.getElementById('hardResetBtn').onclick = hardReset;
+    document.getElementById('exportBtn').onclick = exportData;
+    document.getElementById('importBtn').onclick = importData;
+    document.getElementById('saveSportBtn').onclick = saveFromModal;
+    document.getElementById('closeModalBtn').onclick = closeModal;
+    window.onclick = e => { if (e.target === document.getElementById('sportModal')) closeModal(); };
+</script>
+</body>
+</html>
