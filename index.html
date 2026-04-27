@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0D0303">
+    <title>АНТИГЕРОЙ</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        html, body {
+            background-color: #0D0303; 
+            font-family: 'Montserrat', system-ui, sans-serif; 
+            color: #EFF8FF; 
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+        
+        body { 
+            padding: 16px;
+            padding-top: max(env(safe-area-inset-top, 16px), 16px);
+            padding-left: max(env(safe-area-inset-left, 16px), 16px);
+            padding-right: max(env(safe-area-inset-right, 16px), 16px);
+            padding-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
+        }
+        
+        .app { max-width: 100%; margin: 0 auto; width: 100%; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; margin-top: 8px; }
+        .logo { display: flex; gap: 2px; }
+        .logo i { font-size: 1.4rem; color: #BBEF1F; margin: 0 2px; }
+        .header-text h1 { font-size: 0.9rem; color: #BBEF1F; font-weight: 700; }
+        .header-text p { font-size: 0.5rem; color: #FF0055; letter-spacing: 0.5px; }
+        .settings-icon { cursor: pointer; font-size: 1.2rem; color: #BBEF1F; background: none; border: none; padding: 8px; }
+        
+        .date-block { border-radius: 12px; padding: 20px 16px; margin-bottom: 12px; text-align: center; border: 2px solid transparent; cursor: pointer; }
+        .date-block.inactive { background: #0a0303; border-color: #2a0a0a; }
+        .date-block.active { background: #BBEF1F; border-color: #BBEF1F; }
+        .date-block.active .date-month, .date-block.active .date-day, .date-block.active .date-summary span, .date-block.active .date-summary-item i { color: #0D0303; }
+        .date-month { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; color: #8a8a8a; }
+        .date-day { font-size: 3.5rem; font-weight: 900; line-height: 1; color: #BBEF1F; }
+        .date-summary { display: flex; justify-content: center; gap: 16px; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .date-block.active .date-summary { border-top-color: rgba(0,0,0,0.1); }
+        .date-summary-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .date-summary-item i { font-size: 0.9rem; color: #8a8a8a; }
+        .date-summary-item span { font-size: 0.5rem; color: #8a8a8a; }
+        
+        .nav-row { display: flex; gap: 10px; margin-bottom: 12px; }
+        .nav-btn { flex: 1; background: #0a0303; border: 1px solid #2a0a0a; color: #EFF8FF; padding: 10px; font-size: 0.65rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 8px; transition: all 0.2s; }
+        .nav-btn:active { border-color: #BBEF1F; color: #BBEF1F; transform: scale(0.98); }
+        
+        .cards-row { display: flex; gap: 10px; margin-bottom: 16px; }
+        .card { flex: 1; background: #0a0303; border: 1px solid #2a0a0a; padding: 10px 8px; text-align: center; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+        .card:active { transform: scale(0.97); }
+        .card.active { border-color: #BBEF1F; background: rgba(187, 239, 31, 0.05); }
+        .card-icon { font-size: 1.2rem; color: #BBEF1F; }
+        .card-icon.nicotine { color: #FF0055; }
+        .card-icon.alcohol { color: #EFF8FF; }
+        .card-title { font-size: 0.55rem; margin: 4px 0; }
+        .card-status { font-size: 0.75rem; font-weight: 700; }
+        .card-status.active { color: #BBEF1F; }
+        .card-status.inactive { color: #FF0055; }
+        
+        .details-panel { display: none; background: #0a0303; border: 1px solid #2a0a0a; padding: 12px; margin-bottom: 16px; border-radius: 8px; }
+        .details-panel.show { display: block; }
+        .section-title { font-size: 0.65rem; color: #BBEF1F; margin-bottom: 10px; letter-spacing: 1px; }
+        .ex-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+        .ex-btn { background: #120606; border: 1px solid #2f1212; padding: 6px 10px; font-size: 0.65rem; cursor: pointer; display: flex; align-items: center; gap: 6px; border-radius: 6px; color: #EFF8FF; }
+        .ex-btn i { font-size: 0.65rem; color: #BBEF1F; }
+        .ex-btn.active { background: #BBEF1F; color: #0D0303; }
+        .ex-btn.active i { color: #0D0303; }
+        .custom-input, .note-input { width: 100%; background: #1a0505; border: 1px solid #2a0a0a; color: #EFF8FF; padding: 10px; margin: 4px 0; font-size: 0.65rem; font-family: 'Montserrat'; border-radius: 6px; }
+        
+        .analytics-row { display: flex; gap: 10px; margin-bottom: 16px; }
+        .analytics-col { flex: 1; background: #0a0303; border: 1px solid #2a0a0a; padding: 10px; border-radius: 8px; }
+        .analytics-title { font-size: 0.55rem; color: #FF0055; text-align: center; margin-bottom: 8px; letter-spacing: 1px; }
+        .pie { width: 70px; height: 70px; border-radius: 50%; margin: 0 auto; }
+        .pie-legend { text-align: center; margin-top: 6px; font-size: 0.5rem; }
+        .legend-item { display: inline-flex; align-items: center; gap: 3px; margin: 0 2px; }
+        .legend-color { width: 6px; height: 6px; }
+        .legend-color.sport { background: #BBEF1F; }
+        .legend-color.nicotine { background: #FF0055; }
+        .legend-color.alcohol { background: #EFF8FF; }
+        .day-progress { display: flex; flex-direction: column; gap: 4px; }
+        .progress-item { display: flex; align-items: center; gap: 4px; }
+        .progress-label { font-size: 0.5rem; width: 40px; display: flex; align-items: center; gap: 3px; }
+        .progress-label i { font-size: 0.5rem; color: #BBEF1F; }
+        .progress-bar-bg { flex: 1; height: 3px; background: #1a0505; }
+        .progress-bar-fill { height: 100%; background: #BBEF1F; width: 0%; }
+        .progress-value { font-size: 0.5rem; width: 22px; text-align: right; }
+        
+        .charts-section { background: #0a0303; border: 1px solid #2a0a0a; padding: 10px; margin-bottom: 16px; border-radius: 8px; }
+        .chart-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; min-height: 100px; -webkit-overflow-scrolling: touch; }
+        .chart-box { min-width: 120px; flex: 1; height: 90px; }
+        .chart-box h4 { font-size: 0.5rem; color: #FF0055; margin-bottom: 6px; text-align: center; }
+        .chart-box canvas { width: 100% !important; height: 70px !important; }
+        
+        .progress-section { background: #0a0303; border: 1px solid #2a0a0a; padding: 10px; margin-bottom: 16px; border-radius: 8px; }
+        .progress-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+        .chart-bar-wrapper { flex: 1; text-align: center; min-width: 18px; }
+        .chart-bar { background: #BBEF1F; width: 100%; max-width: 24px; margin: 0 auto; min-height: 2px; }
+        .chart-label { font-size: 0.4rem; margin-top: 4px; color: #8a8a8a; }
+        
+        /* ТЕПЛОВАЯ КАРТА - ПРОСТАЯ И ПОНЯТНАЯ */
+        .heatmap-section { background: #0a0303; border: 1px solid #2a0a0a; padding: 12px; margin-bottom: 16px; border-radius: 8px; }
+        .heatmap-title { font-size: 0.55rem; color: #FF0055; text-align: center; margin-bottom: 10px; letter-spacing: 1px; }
+        
+        .year-calendar {
+            display: flex;
+            gap: 2px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .month-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            min-width: 28px;
+        }
+        
+        .month-label {
+            font-size: 0.45rem;
+            color: #8a8a8a;
+            text-align: center;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+        
+        .week-row {
+            display: flex;
+            gap: 1px;
+        }
+        
+        .day-cell {
+            width: 4px;
+            height: 4px;
+            border-radius: 1px;
+            background: #1a0a0a;
+        }
+        
+        .day-cell.level-1 { background: #3a5a2a; }
+        .day-cell.level-2 { background: #5a8a3a; }
+        .day-cell.level-3 { background: #8aba5a; }
+        .day-cell.level-4 { background: #BBEF1F; }
+        
+        .day-cell.today {
+            box-shadow: 0 0 0 1px #FF0055;
+        }
+        
+        .heatmap-legend { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            margin-top: 10px; 
+            font-size: 0.45rem; 
+            color: #8a8a8a; 
+        }
+        
+        .heatmap-legend-item {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+        
+        /* ВИДЕО */
+        .video-section { background: #0a0303; border: 1px solid #2a0a0a; margin-bottom: 16px; border-radius: 8px; overflow: hidden; }
+        .video-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #120606; border-bottom: 1px solid #2a0a0a; cursor: pointer; user-select: none; }
+        .video-header-title { font-size: 0.55rem; color: #FF0055; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+        .video-toggle { color: #BBEF1F; font-size: 0.8rem; transition: transform 0.3s; }
+        .video-toggle.collapsed { transform: rotate(-90deg); }
+        .video-content { padding: 10px; max-height: 2000px; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
+        .video-content.collapsed { max-height: 0; padding: 0; }
+        .video-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        
+        .video-card { background: #120606; border: 1px solid #2a0a0a; border-radius: 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; }
+        .video-card:active { transform: scale(0.97); border-color: #BBEF1F; }
+        
+        .video-thumb { 
+            position: relative; 
+            height: 100px; 
+            background: linear-gradient(135deg, #1a0505 0%, #0a0303 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-thumb-icon { font-size: 1.5rem; color: #3a0a0a; }
+        .video-play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-play-btn {
+            width: 36px;
+            height: 36px;
+            background: #BBEF1F;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0D0303;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .video-card:hover .video-play-overlay { background: rgba(187,239,31,0.2); }
+        .video-card:hover .video-play-btn { transform: scale(1.1); }
+        
+        .video-info { padding: 8px; }
+        .video-title { font-size: 0.6rem; font-weight: 600; margin-bottom: 2px; }
+        .video-duration { font-size: 0.45rem; color: #8a8a8a; }
+        
+        .analytics-extended { background: #0a0303; border: 1px solid #2a0a0a; padding: 10px; margin-bottom: 16px; border-radius: 8px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+        .stat-card { background: #120606; border: 1px solid #2a0a0a; padding: 8px 6px; text-align: center; border-radius: 6px; }
+        .stat-card .stat-icon { font-size: 0.8rem; margin-bottom: 2px; }
+        .stat-card .stat-icon.green { color: #BBEF1F; }
+        .stat-card .stat-icon.red { color: #FF0055; }
+        .stat-card .stat-icon.blue { color: #EFF8FF; }
+        .stat-card .stat-icon.purple { color: #9b59b6; }
+        .stat-number { font-size: 1rem; font-weight: 800; color: #BBEF1F; }
+        .stat-label-sm { font-size: 0.45rem; color: #8a8a8a; letter-spacing: 0.5px; margin-top: 2px; }
+        
+        .flex-row { display: flex; gap: 6px; margin-bottom: 10px; }
+        .flex-col { flex: 1; background: #120606; border: 1px solid #2a0a0a; padding: 8px; text-align: center; border-radius: 6px; }
+        .flex-col .stat-label-sm { font-size: 0.45rem; }
+        .flex-col .stat-number { font-size: 0.85rem; }
+        
+        .weekday-bars { margin-top: 10px; }
+        .weekday-bar-item { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .weekday-bar-label { font-size: 0.5rem; width: 22px; color: #8a8a8a; }
+        .weekday-bar-bg { flex: 1; height: 6px; background: #1a0505; border-radius: 3px; overflow: hidden; }
+        .weekday-bar-fill { height: 100%; background: #BBEF1F; border-radius: 3px; min-width: 2px; }
+        .weekday-bar-value { font-size: 0.5rem; width: 18px; text-align: right; color: #BBEF1F; }
+        
+        /* МОДАЛЫ */
+        .modal-full { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: #0D0303; 
+            z-index: 1000; 
+            padding: 16px;
+            padding-top: max(env(safe-area-inset-top, 16px), 16px);
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+        }
+        .modal-full.show { display: block; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #FF0055; }
+        .modal-nav { display: flex; gap: 12px; align-items: center; }
+        .modal-nav-btn { background: transparent; border: 1px solid #BBEF1F; color: #BBEF1F; width: 36px; height: 36px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
+        .modal-nav-btn:active { background: #BBEF1F; color: #0D0303; }
+        .modal-nav-btn.close { border-color: #FF0055; color: #FF0055; }
+        .modal-nav-btn.close:active { background: #FF0055; color: #EFF8FF; }
+        .modal-month-label { font-size: 0.9rem; font-weight: 700; color: #BBEF1F; min-width: 100px; text-align: center; }
+        .tracker-block { background: #0a0303; border: 1px solid #2a0a0a; padding: 10px; margin-bottom: 12px; border-radius: 8px; }
+        .tracker-block-title { font-size: 0.6rem; color: #BBEF1F; margin-bottom: 8px; }
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+        .weekday { font-size: 0.45rem; text-align: center; color: #FF0055; }
+        .mini-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+        .day-tile { aspect-ratio: 1; background: #120606; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; cursor: pointer; border: 1px solid #2f1212; border-radius: 4px; transition: all 0.15s; }
+        .day-tile:active:not(.empty) { transform: scale(0.9); }
+        .day-tile.active { background: #BBEF1F; color: #0D0303; border-color: #BBEF1F; }
+        .day-tile.today { border-color: #FF0055; }
+        .day-tile.empty { opacity: 0.2; cursor: default; background: transparent; border-color: transparent; }
+        
+        .video-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; padding: 16px; }
+        .video-modal.show { display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .video-modal video { max-width: 100%; max-height: 75vh; border-radius: 8px; }
+        .video-modal-close { position: absolute; top: max(env(safe-area-inset-top, 16px), 16px); right: 16px; background: none; border: none; color: #BBEF1F; font-size: 1.8rem; cursor: pointer; padding: 8px; }
+        .video-modal-title { color: #BBEF1F; font-size: 0.75rem; margin-top: 12px; text-align: center; }
+        
+        .settings-modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: #0D0303; 
+            z-index: 1000; 
+            padding: 16px;
+            padding-top: max(env(safe-area-inset-top, 16px), 16px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .settings-modal.show { display: block; }
+        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #FF0055; }
+        .custom-ex-list { margin: 10px 0; }
+        .custom-ex-item { display: flex; justify-content: space-between; background: #1a0505; padding: 8px 10px; margin: 4px 0; border: 1px solid #2a0a0a; border-radius: 6px; }
+        .delete-ex { color: #FF0055; cursor: pointer; }
+        .add-ex-input { width: 100%; background: #1a0505; border: 1px solid #2a0a0a; color: white; padding: 10px; font-family: 'Montserrat'; border-radius: 6px; }
+        .icon-preview { display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
+        .icon-option { width: 44px; height: 44px; background: #0a0303; border: 1px solid #2a0a0a; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; border-radius: 8px; }
+        .icon-option.selected { border: 2px solid #BBEF1F; }
+        .toggle-switch { width: 44px; height: 24px; background: #1a0505; border: 1px solid #FF0055; position: relative; cursor: pointer; border-radius: 12px; }
+        .toggle-switch.active { background: #BBEF1F; }
+        .toggle-knob { width: 18px; height: 18px; background: #EFF8FF; position: absolute; top: 2px; left: 2px; transition: 0.1s; border-radius: 50%; }
+        .toggle-switch.active .toggle-knob { left: 22px; }
+        
+        .save-indicator { position: fixed; bottom: max(env(safe-area-inset-bottom, 20px), 20px); right: 16px; background: #0a0303; border: 1px solid #2a6b2a; padding: 6px 10px; font-size: 0.55rem; color: #2a6b2a; opacity: 0; transition: 0.3s; z-index: 2000; border-radius: 6px; }
+        .save-indicator.show { opacity: 1; }
+        
+        @media (min-width: 600px) {
+            body { padding: 24px; }
+            .date-day { font-size: 4.5rem; }
+            .card { padding: 16px 12px; }
+            .card-icon { font-size: 1.5rem; }
+            .video-thumb { height: 140px; }
+            .video-play-btn { width: 50px; height: 50px; font-size: 1.1rem; }
+            .stats-grid { gap: 12px; }
+            .day-cell { width: 5px; height: 5px; }
+            .month-column { min-width: 32px; }
+        }
+        
+        @media (min-width: 900px) {
+            body { padding: 40px; }
+            .app { max-width: 700px; }
+            .date-block { padding: 32px 28px; border-radius: 16px; }
+            .date-day { font-size: 5rem; }
+            .card { padding: 20px 16px; border-radius: 12px; }
+            .day-cell { width: 6px; height: 6px; }
+            .month-column { min-width: 36px; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        <div class="logo" id="logo">
+            <i class="fas fa-plus-circle"></i>
+            <i class="fas fa-plus-circle"></i>
+            <i class="fas fa-plus-circle"></i>
+        </div>
+        <div class="header-text">
+            <h1>ДНЕВНИК АНТИГЕРОЯ</h1>
+            <p>ТВЁРДЫЙ ВХОД · НИКОТИН · ВАЙБ</p>
+        </div>
+        <button class="settings-icon" id="settingsBtn"><i class="fas fa-sliders-h"></i></button>
+    </div>
+
+    <div class="date-block inactive" id="dateBlock">
+        <div class="date-month" id="dateMonth">АПРЕЛЬ 2026</div>
+        <div class="date-day" id="dateDay">23</div>
+        <div class="date-summary">
+            <div class="date-summary-item" id="summarySport">
+                <i class="fas fa-dumbbell"></i>
+                <span>ТВЁРДЫЙ</span>
+            </div>
+            <div class="date-summary-item" id="summaryNicotine">
+                <i class="fas fa-smoking"></i>
+                <span>НИКОТИН</span>
+            </div>
+            <div class="date-summary-item" id="summaryAlcohol">
+                <i class="fas fa-wine-bottle"></i>
+                <span>ВАЙБ</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-row">
+        <button class="nav-btn" id="prevDayBtn"><i class="fas fa-chevron-left"></i></button>
+        <button class="nav-btn" id="todayBtn"><i class="fas fa-calendar-day"></i></button>
+        <button class="nav-btn" id="nextDayBtn"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <div class="cards-row">
+        <div class="card" id="sportCard">
+            <div class="card-icon"><i class="fas fa-dumbbell"></i></div>
+            <div class="card-title">ТВЁРДЫЙ ВХОД</div>
+            <div class="card-status" id="sportStatus"><i class="far fa-circle"></i></div>
+        </div>
+        <div class="card" id="nicotineCard">
+            <div class="card-icon nicotine"><i class="fas fa-smoking"></i></div>
+            <div class="card-title">НИКОТИН</div>
+            <div class="card-status" id="nicotineStatus"><i class="far fa-circle"></i></div>
+        </div>
+        <div class="card" id="alcoholCard">
+            <div class="card-icon alcohol"><i class="fas fa-wine-bottle"></i></div>
+            <div class="card-title">ЖИДКИЙ ВАЙБ</div>
+            <div class="card-status" id="alcoholStatus"><i class="far fa-circle"></i></div>
+        </div>
+    </div>
+
+    <div id="detailsPanel" class="details-panel">
+        <div class="section-title"><i class="fas fa-dumbbell"></i> УПРАЖНЕНИЯ</div>
+        <div class="ex-grid" id="exGrid"></div>
+        <input type="text" id="customEx" class="custom-input" placeholder="СВОЁ">
+        <textarea id="note" class="note-input" rows="2" placeholder="ЗАМЕТКА"></textarea>
+    </div>
+
+    <!-- ВИДЕО -->
+    <div class="video-section" id="videoSection">
+        <div class="video-header" onclick="toggleVideoSection()">
+            <div class="video-header-title">
+                <i class="fas fa-play-circle"></i> ТРЕНИРОВКИ
+            </div>
+            <i class="fas fa-chevron-up video-toggle" id="videoToggle"></i>
+        </div>
+        <div class="video-content" id="videoContent">
+            <div class="video-grid">
+                <div class="video-card" onclick="playVideo('Video/video1.mp4', 'УТРЕННЯЯ РАЗМИНКА')">
+                    <div class="video-thumb">
+                        <i class="fas fa-dumbbell video-thumb-icon"></i>
+                        <div class="video-play-overlay">
+                            <div class="video-play-btn"><i class="fas fa-play"></i></div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">УТРЕННЯЯ РАЗМИНКА</div>
+                        <div class="video-duration">VIDEO 1</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('Video/video2.mp4', 'ПРЕСС + КОР')">
+                    <div class="video-thumb">
+                        <i class="fas fa-fire video-thumb-icon"></i>
+                        <div class="video-play-overlay">
+                            <div class="video-play-btn"><i class="fas fa-play"></i></div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">ПРЕСС + КОР</div>
+                        <div class="video-duration">VIDEO 2</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('Video/video3.mp4', 'РУКИ + ПЛЕЧИ')">
+                    <div class="video-thumb">
+                        <i class="fas fa-hand-fist video-thumb-icon"></i>
+                        <div class="video-play-overlay">
+                            <div class="video-play-btn"><i class="fas fa-play"></i></div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">РУКИ + ПЛЕЧИ</div>
+                        <div class="video-duration">VIDEO 3</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('Video/video4.mp4', 'НОГИ + ЯГОДИЦЫ')">
+                    <div class="video-thumb">
+                        <i class="fas fa-person-running video-thumb-icon"></i>
+                        <div class="video-play-overlay">
+                            <div class="video-play-btn"><i class="fas fa-play"></i></div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">НОГИ + ЯГОДИЦЫ</div>
+                        <div class="video-duration">VIDEO 4</div>
+                    </div>
+                </div>
+                <div class="video-card" onclick="playVideo('Video/video5.mp4', 'КАРДИО')">
+                    <div class="video-thumb">
+                        <i class="fas fa-heart video-thumb-icon"></i>
+                        <div class="video-play-overlay">
+                            <div class="video-play-btn"><i class="fas fa-play"></i></div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">КАРДИО</div>
+                        <div class="video-duration">VIDEO 5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="analytics-row">
+        <div class="analytics-col">
+            <div class="analytics-title"><i class="fas fa-chart-pie"></i> ЗА МЕСЯЦ</div>
+            <div class="pie" id="pieChart"></div>
+            <div class="pie-legend" id="pieLegend"></div>
+        </div>
+        <div class="analytics-col">
+            <div class="analytics-title"><i class="fas fa-chart-line"></i> ПРОГРЕССИЯ</div>
+            <div class="day-progress" id="dayProgress"></div>
+        </div>
+    </div>
+
+    <div class="charts-section">
+        <div class="analytics-title"><i class="fas fa-chart-bar"></i> АКТИВНОСТЬ</div>
+        <div class="chart-container">
+            <div class="chart-box"><h4>НЕДЕЛЯ</h4><canvas id="weekChart"></canvas></div>
+            <div class="chart-box"><h4>МЕСЯЦ</h4><canvas id="monthChart"></canvas></div>
+        </div>
+    </div>
+
+    <div class="progress-section">
+        <div class="analytics-title"><i class="fas fa-chart-bar"></i> ГРАФИК ПРОГРЕССА</div>
+        <div class="progress-chart" id="progressChart"></div>
+    </div>
+    
+    <!-- ТЕПЛОВАЯ КАРТА -->
+    <div class="heatmap-section">
+        <div class="heatmap-title"><i class="fas fa-calendar-alt"></i> АКТИВНОСТЬ ЗА ГОД</div>
+        <div class="year-calendar" id="yearCalendar"></div>
+        <div class="heatmap-legend">
+            <span>Нет</span>
+            <div class="heatmap-legend-item" style="background:#1a0a0a;border:1px solid #2a0a0a;"></div>
+            <div class="heatmap-legend-item" style="background:#3a5a2a;"></div>
+            <div class="heatmap-legend-item" style="background:#5a8a3a;"></div>
+            <div class="heatmap-legend-item" style="background:#8aba5a;"></div>
+            <div class="heatmap-legend-item" style="background:#BBEF1F;"></div>
+            <span>Макс</span>
+        </div>
+    </div>
+
+    <div class="analytics-extended">
+        <div class="analytics-title"><i class="fas fa-trophy"></i> ТРОФЕИ И СТАТИСТИКА</div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-fire"></i></div>
+                <div class="stat-number" id="streakCount">0</div>
+                <div class="stat-label-sm">ДНЕЙ ПОДРЯД</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="fas fa-trophy"></i></div>
+                <div class="stat-number" id="bestStreak">0</div>
+                <div class="stat-label-sm">РЕКОРД</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-dumbbell"></i></div>
+                <div class="stat-number" id="totalWorkouts">0</div>
+                <div class="stat-label-sm">ТРЕНИРОВОК</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-calendar-check"></i></div>
+                <div class="stat-number" id="completionRate">0%</div>
+                <div class="stat-label-sm">ВЫПОЛНЕНИЕ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red"><i class="fas fa-skull"></i></div>
+                <div class="stat-number" id="totalSlips">0</div>
+                <div class="stat-label-sm">СРЫВЫ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-wine-bottle"></i></div>
+                <div class="stat-number" id="totalDrinks">0</div>
+                <div class="stat-label-sm">ПЬЯНКИ</div>
+            </div>
+        </div>
+        
+        <div class="weekday-bars" id="weekdayBars"></div>
+        
+        <div class="flex-row" style="margin-top:12px;">
+            <div class="flex-col">
+                <div class="stat-label-sm" style="color:#BBEF1F;">ЧИСТЫЕ</div>
+                <div class="stat-number" id="cleanDays">0</div>
+            </div>
+            <div class="flex-col">
+                <div class="stat-label-sm" style="color:#FF0055;">ХАОС</div>
+                <div class="stat-number" id="chaosDays">0</div>
+            </div>
+            <div class="flex-col">
+                <div class="stat-label-sm" style="color:#EFF8FF;">СМЕШКА</div>
+                <div class="stat-number" id="mixDays">0</div>
+            </div>
+        </div>
+        
+        <div class="flex-row">
+            <div class="flex-col">
+                <div class="stat-label-sm">ЛУЧШИЙ МЕС</div>
+                <div class="stat-number" id="bestMonth" style="font-size:0.8rem;">—</div>
+            </div>
+            <div class="flex-col">
+                <div class="stat-label-sm">ДИНАМИКА</div>
+                <div class="stat-number" id="dynamics" style="font-size:0.8rem;">—</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="video-modal" id="videoModal">
+    <button class="video-modal-close" onclick="closeVideo()"><i class="fas fa-times"></i></button>
+    <video id="videoPlayer" controls playsinline>
+        <source src="" type="video/mp4">
+        Ваш браузер не поддерживает видео.
+    </video>
+    <div class="video-modal-title" id="videoModalTitle"></div>
+</div>
+
+<!-- CALENDAR MODAL -->
+<div id="monthModal" class="modal-full">
+    <div class="modal-header">
+        <div class="modal-nav">
+            <button class="modal-nav-btn" id="modalPrevMonth"><i class="fas fa-chevron-left"></i></button>
+            <span class="modal-month-label" id="modalMonthLabel">АПРЕЛЬ 2026</span>
+            <button class="modal-nav-btn" id="modalNextMonth"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <button class="modal-nav-btn close" id="closeModalBtn"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="modalTrackers"></div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" class="settings-modal">
+    <div class="settings-header">
+        <span style="color:#BBEF1F"><i class="fas fa-gear"></i> НАСТРОЙКИ</span>
+        <button id="closeSettingsBtn" style="background:none; border:none; color:#FF0055; font-size:1.2rem; padding:8px;"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="section-title"><i class="fas fa-plus-circle"></i> СВОИ УПРАЖНЕНИЯ</div>
+    <div id="customExercisesList"></div>
+    <input type="text" id="newExerciseName" class="add-ex-input" placeholder="НАЗВАНИЕ">
+    <button id="addExerciseBtn" style="width:100%; padding:10px; margin-top:8px; background:#1a0505; border:1px solid #BBEF1F; color:#BBEF1F; cursor:pointer; border-radius:6px;">ДОБАВИТЬ</button>
+    <div class="section-title" style="margin-top:16px;"><i class="fas fa-palette"></i> ИКОНКА</div>
+    <div class="icon-preview" id="iconPreview"></div>
+    <div class="section-title" style="margin-top:16px;"><i class="fas fa-bell"></i> НАПОМИНАНИЯ</div>
+    <div style="display:flex; justify-content:space-between; margin:10px 0;"><span>ВКЛЮЧИТЬ (21:00)</span><div class="toggle-switch" id="notificationToggle"><div class="toggle-knob"></div></div></div>
+    <div class="section-title" style="margin-top:16px;"><i class="fas fa-database"></i> ДАННЫЕ</div>
+    <div style="display:flex; gap:8px;">
+        <button id="exportDataBtn" style="flex:1; padding:10px; background:#1a0505; border:1px solid #BBEF1F; color:#EFF8FF; cursor:pointer; border-radius:6px;">ЭКСПОРТ</button>
+        <button id="clearDataBtn" style="flex:1; padding:10px; background:#1a0505; border:1px solid #FF0055; color:#FF0055; cursor:pointer; border-radius:6px;">ОЧИСТИТЬ</button>
+    </div>
+    <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    <button id="importDataBtn" style="width:100%; padding:10px; margin-top:8px; background:#1a0505; border:1px solid #2a0a0a; color:#EFF8FF; cursor:pointer; border-radius:6px;">ИМПОРТ</button>
+</div>
+
+<div id="saveIndicator" class="save-indicator"><i class="fas fa-check-circle"></i> СОХРАНЕНО</div>
+
+<script>
+// ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =====
+let globalData = new Map();
+let userExercises = [];
+let currentDate = new Date();
+let curEx = { press: false, arms: false, pullups: false, legs: false, cardio: false, custom: "" };
+let curNicotine = false, curAlcohol = false, curSport = false;
+let curNicotineType = 'cigarette';
+let appIcon = 'default';
+let notifEnabled = false;
+let weekChart = null, monthChart = null;
+let videoCollapsed = false;
+
+const ICONS = [
+    {id:'default',char:'fa-plus-circle'},
+    {id:'skull',char:'fa-skull'},
+    {id:'bolt',char:'fa-bolt'},
+    {id:'target',char:'fa-bullseye'},
+    {id:'fire',char:'fa-fire'}
+];
+
+const MONTHS = ['ЯНВАРЬ','ФЕВРАЛЬ','МАРТ','АПРЕЛЬ','МАЙ','ИЮНЬ','ИЮЛЬ','АВГУСТ','СЕНТЯБРЬ','ОКТЯБРЬ','НОЯБРЬ','ДЕКАБРЬ'];
+const WEEKDAYS_SHORT = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+
+// ===== ВИДЕО =====
+function toggleVideoSection() {
+    const content = document.getElementById('videoContent');
+    const toggle = document.getElementById('videoToggle');
+    videoCollapsed = !videoCollapsed;
+    
+    if (videoCollapsed) {
+        content.classList.add('collapsed');
+        toggle.classList.add('collapsed');
+    } else {
+        content.classList.remove('collapsed');
+        toggle.classList.remove('collapsed');
+    }
+    
+    haptic();
+    localStorage.setItem('antihero_video_collapsed', videoCollapsed);
+}
+
+function playVideo(url, title) {
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('videoPlayer');
+    const titleEl = document.getElementById('videoModalTitle');
+    
+    player.src = url;
+    titleEl.textContent = title;
+    modal.classList.add('show');
+    
+    player.play().catch(err => {
+        alert('Видео не найдено! Проверь что файл ' + url + ' существует в папке Video/');
+    });
+    
+    haptic();
+}
+
+function closeVideo() {
+    const modal = document.getElementById('videoModal');
+    const player = document.getElementById('videoPlayer');
+    player.pause();
+    player.src = '';
+    modal.classList.remove('show');
+}
+
+document.getElementById('videoModal').addEventListener('click', (e) => {
+    if (e.target.id === 'videoModal') closeVideo();
+});
+
+// ===== ХРАНИЛИЩЕ =====
+function loadData() {
+    const raw = localStorage.getItem('antihero_main_data');
+    if (raw) {
+        try {
+            const obj = JSON.parse(raw);
+            globalData.clear();
+            for (const [k, v] of Object.entries(obj)) globalData.set(k, v);
+        } catch(e) {}
+    }
+    const exRaw = localStorage.getItem('antihero_user_exercises');
+    userExercises = exRaw ? JSON.parse(exRaw) : ['КАРДИО', 'ОТЖИМАНИЯ'];
+    const savedIcon = localStorage.getItem('antihero_app_icon');
+    if (savedIcon) appIcon = savedIcon;
+    notifEnabled = localStorage.getItem('antihero_notif') === 'true';
+    videoCollapsed = localStorage.getItem('antihero_video_collapsed') === 'true';
+}
+
+function saveData() {
+    const obj = {};
+    for (const [k, v] of globalData.entries()) obj[k] = v;
+    localStorage.setItem('antihero_main_data', JSON.stringify(obj));
+    localStorage.setItem('antihero_user_exercises', JSON.stringify(userExercises));
+}
+
+function getEntry(ds) {
+    return globalData.get(ds) || { sport: false, sportDetails: {}, nicotine: false, nicotineType: 'cigarette', alcohol: false, note: "" };
+}
+
+function setEntry(ds, e) { globalData.set(ds, e); saveData(); }
+
+function dateKey(d) {
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// ===== ТЕПЛОВАЯ КАРТА =====
+function updateHeatmap() {
+    const container = document.getElementById('yearCalendar');
+    container.innerHTML = '';
+    
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const todayKey = dateKey(today);
+    
+    // Проходим по всем 12 месяцам
+    for (let month = 0; month < 12; month++) {
+        const monthCol = document.createElement('div');
+        monthCol.className = 'month-column';
+        
+        // Название месяца
+        const label = document.createElement('div');
+        label.className = 'month-label';
+        label.textContent = MONTHS[month].slice(0, 3);
+        monthCol.appendChild(label);
+        
+        // Первый день месяца
+        const firstDay = new Date(currentYear, month, 1);
+        // Сколько дней в месяце
+        const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
+        
+        // Создаем строки по неделям
+        let weekRow = document.createElement('div');
+        weekRow.className = 'week-row';
+        
+        // День недели первого дня (0 = воскресенье, 1 = понедельник...)
+        let firstDayWeekday = firstDay.getDay();
+        // Переводим в формат где 0 = понедельник
+        let offset = firstDayWeekday === 0 ? 6 : firstDayWeekday - 1;
+        
+        // Пустые ячейки до первого дня
+        for (let i = 0; i < offset; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'day-cell';
+            emptyCell.style.background = 'transparent';
+            weekRow.appendChild(emptyCell);
+        }
+        
+        // Дни месяца
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(currentYear, month, day);
+            const ds = dateKey(date);
+            const entry = getEntry(ds);
+            
+            // Считаем уровень активности
+            let level = 0;
+            if (entry.sport) level += 2;
+            if (entry.nicotine) level += 1;
+            if (entry.alcohol) level += 1;
+            level = Math.min(level, 4);
+            
+            const cell = document.createElement('div');
+            cell.className = 'day-cell';
+            
+            if (level === 0) {
+                cell.style.background = '#1a0a0a';
+            } else {
+                cell.classList.add('level-' + level);
+            }
+            
+            // Подсветка сегодня
+            if (ds === todayKey) {
+                cell.classList.add('today');
+            }
+            
+            cell.title = `${day} ${MONTHS[month]}: ${level === 0 ? 'нет' : level === 1 ? 'легко' : level === 2 ? 'средне' : level === 3 ? 'хорошо' : 'отлично'}`;
+            
+            weekRow.appendChild(cell);
+            
+            // Если воскресенье - закрываем неделю
+            if (date.getDay() === 0) {
+                monthCol.appendChild(weekRow);
+                weekRow = document.createElement('div');
+                weekRow.className = 'week-row';
+            }
+        }
+        
+        // Добавляем последнюю неделю если есть
+        if (weekRow.children.length > 0) {
+            monthCol.appendChild(weekRow);
+        }
+        
+        container.appendChild(monthCol);
+    }
+}
+
+// ===== ОСТАЛЬНЫЕ ФУНКЦИИ =====
+function updateAppIcon() {
+    const icon = ICONS.find(i => i.id === appIcon) || ICONS[0];
+    document.getElementById('logo').innerHTML = `<i class="fas ${icon.char}"></i><i class="fas ${icon.char}"></i><i class="fas ${icon.char}"></i>`;
+}
+
+function renderEx() {
+    const container = document.getElementById('exGrid');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    const std = [['press','ПРЕСС','fa-heartbeat'],['arms','РУКИ','fa-hand-fist'],['pullups','ПОДТЯГ','fa-arrow-up'],['legs','НОГИ','fa-person-walking'],['cardio','КАРДИО','fa-heart']];
+    
+    for (let [k,lbl,icon] of std) {
+        const btn = document.createElement('div');
+        btn.className = 'ex-btn' + (curEx[k] ? ' active' : '');
+        btn.innerHTML = `<i class="fas ${icon}"></i> ${lbl}`;
+        btn.onclick = () => { curEx[k] = !curEx[k]; renderEx(); autoSave(); haptic(); };
+        container.appendChild(btn);
+    }
+    
+    for (let ex of userExercises) {
+        const btn = document.createElement('div');
+        btn.className = 'ex-btn' + (curEx[ex] ? ' active' : '');
+        btn.innerHTML = `<i class="fas fa-tag"></i> ${ex}`;
+        btn.onclick = () => { curEx[ex] = !curEx[ex]; renderEx(); autoSave(); haptic(); };
+        container.appendChild(btn);
+    }
+}
+
+function updateDateBlock() {
+    const block = document.getElementById('dateBlock');
+    const isActive = curSport || curNicotine || curAlcohol;
+    block.className = 'date-block ' + (isActive ? 'active' : 'inactive');
+    
+    document.getElementById('summarySport').querySelector('i').className = curSport ? 'fas fa-dumbbell' : 'far fa-circle';
+    document.getElementById('summaryNicotine').querySelector('i').className = curNicotine ? 'fas fa-smoking' : 'far fa-circle';
+    document.getElementById('summaryAlcohol').querySelector('i').className = curAlcohol ? 'fas fa-wine-bottle' : 'far fa-circle';
+}
+
+function updateCards() {
+    document.getElementById('sportStatus').innerHTML = curSport ? '<i class="fas fa-check-circle"></i>' : '<i class="far fa-circle"></i>';
+    document.getElementById('sportStatus').className = 'card-status ' + (curSport ? 'active' : 'inactive');
+    document.getElementById('sportCard').className = 'card' + (curSport ? ' active' : '');
+    
+    document.getElementById('nicotineStatus').innerHTML = curNicotine ? '<i class="fas fa-check-circle"></i>' : '<i class="far fa-circle"></i>';
+    document.getElementById('nicotineStatus').className = 'card-status ' + (curNicotine ? 'active' : 'inactive');
+    document.getElementById('nicotineCard').className = 'card' + (curNicotine ? ' active' : '');
+    
+    document.getElementById('alcoholStatus').innerHTML = curAlcohol ? '<i class="fas fa-check-circle"></i>' : '<i class="far fa-circle"></i>';
+    document.getElementById('alcoholStatus').className = 'card-status ' + (curAlcohol ? 'active' : 'inactive');
+    document.getElementById('alcoholCard').className = 'card' + (curAlcohol ? ' active' : '');
+}
+
+function updateDateDisplay() {
+    document.getElementById('dateDay').innerText = currentDate.getDate();
+    document.getElementById('dateMonth').innerText = `${MONTHS[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+}
+
+function updatePie() {
+    const y = currentDate.getFullYear(), m = currentDate.getMonth();
+    const days = new Date(y, m+1, 0).getDate();
+    let sport=0, nic=0, alc=0;
+    
+    for (let d=1; d<=days; d++) {
+        const e = getEntry(`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+        if (e.sport) sport++;
+        if (e.nicotine) nic++;
+        if (e.alcohol) alc++;
+    }
+    
+    const total = sport+nic+alc;
+    if (total === 0) {
+        document.getElementById('pieChart').style.background = '#1a1a1a';
+        document.getElementById('pieLegend').innerHTML = 'НЕТ ДАННЫХ';
+        return;
+    }
+    
+    const deg1 = (sport/total)*360, deg2 = deg1 + (nic/total)*360;
+    document.getElementById('pieChart').style.background = `conic-gradient(#BBEF1F 0deg ${deg1}deg, #FF0055 ${deg1}deg ${deg2}deg, #EFF8FF ${deg2}deg 360deg)`;
+    document.getElementById('pieLegend').innerHTML = `<span class="legend-item"><span class="legend-color sport"></span>${sport}</span><span class="legend-item"><span class="legend-color nicotine"></span>${nic}</span><span class="legend-item"><span class="legend-color alcohol"></span>${alc}</span>`;
+}
+
+function updateDayProgress() {
+    const c = document.getElementById('dayProgress');
+    c.innerHTML = '';
+    const std = [['press','ПРЕСС','fa-heartbeat'],['arms','РУКИ','fa-hand-fist'],['pullups','ПОДТЯГ','fa-arrow-up'],['legs','НОГИ','fa-person-walking'],['cardio','КАРДИО','fa-heart']];
+    
+    for (let [k,lbl,icon] of std) {
+        const row = document.createElement('div');
+        row.className = 'progress-item';
+        row.innerHTML = `<span class="progress-label"><i class="fas ${icon}"></i> ${lbl}</span><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${curEx[k]?100:0}%"></div></div><span class="progress-value">${curEx[k]?'✓':''}</span>`;
+        c.appendChild(row);
+    }
+}
+
+function updateProgressChart() {
+    const c = document.getElementById('progressChart');
+    c.innerHTML = '';
+    const months = [];
+    
+    for (let i=5; i>=0; i--) months.push(new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1));
+    
+    let maxCount = 1;
+    for (let m of months) {
+        let cnt=0;
+        for (let [date,e] of globalData) {
+            if (date.startsWith(`${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`) && e.sport) cnt++;
+        }
+        maxCount = Math.max(maxCount, cnt);
+    }
+    
+    for (let m of months) {
+        let cnt=0;
+        for (let [date,e] of globalData) {
+            if (date.startsWith(`${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`) && e.sport) cnt++;
+        }
+        
+        const w = document.createElement('div');
+        w.className = 'chart-bar-wrapper';
+        const bar = document.createElement('div');
+        bar.className = 'chart-bar';
+        bar.style.height = `${Math.max((cnt/maxCount)*100, 2)}px`;
+        const lbl = document.createElement('div');
+        lbl.className = 'chart-label';
+        lbl.innerText = MONTHS[m.getMonth()].slice(0,3);
+        
+        w.appendChild(bar);
+        w.appendChild(lbl);
+        c.appendChild(w);
+    }
+}
+
+function initCharts() {
+    const weekCanvas = document.getElementById('weekChart');
+    const monthCanvas = document.getElementById('monthChart');
+
+    if (!weekCanvas || !monthCanvas) return;
+
+    weekChart = new Chart(weekCanvas, {
+        type: 'bar',
+        data: {
+            labels: WEEKDAYS_SHORT,
+            datasets: [{ data: [0,0,0,0,0,0,0], backgroundColor: '#BBEF1F', borderRadius: 3, barThickness: 10 }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            animation: { duration: 0 },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#8a8a8a', font: { size: 7, family: 'Montserrat' } }, border: { display: false } },
+                y: { grid: { color: '#2a0a0a' }, ticks: { color: '#8a8a8a', stepSize: 1, font: { size: 7 } }, beginAtZero: true, border: { display: false } }
+            }
+        }
+    });
+
+    monthChart = new Chart(monthCanvas, {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 30}, (_, i) => i + 1),
+            datasets: [{ data: [], borderColor: '#BBEF1F', backgroundColor: 'rgba(187,239,31,0.1)', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            animation: { duration: 0 },
+            scales: {
+                x: { grid: { display: false }, ticks: { display: false }, border: { display: false } },
+                y: { grid: { color: '#2a0a0a' }, ticks: { display: false }, beginAtZero: true, border: { display: false } }
+            }
+        }
+    });
+}
+
+function updateCharts() {
+    if (!weekChart || !monthChart) return;
+    
+    const today = new Date();
+    let weekData = [0, 0, 0, 0, 0, 0, 0];
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - 6);
+    
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(weekStart);
+        date.setDate(weekStart.getDate() + i);
+        const ds = dateKey(date);
+        const entry = getEntry(ds);
+        const wdIndex = date.getDay() === 0 ? 6 : date.getDay() - 1;
+        let score = 0;
+        if (entry.sport) score += 3;
+        if (entry.nicotine) score += 1;
+        if (entry.alcohol) score += 1;
+        weekData[wdIndex] = score;
+    }
+    
+    weekChart.data.datasets[0].data = weekData;
+    weekChart.update('none');
+    
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    let monthData = [];
+    
+    for (let d = 1; d <= daysInMonth; d++) {
+        const date = new Date(today.getFullYear(), today.getMonth(), d);
+        const entry = getEntry(dateKey(date));
+        let score = 0;
+        if (entry.sport) score += 3;
+        if (entry.nicotine) score += 1;
+        if (entry.alcohol) score += 1;
+        monthData.push(score);
+    }
+    
+    monthChart.data.labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+    monthChart.data.datasets[0].data = monthData;
+    monthChart.update('none');
+}
+
+function updateAdvancedAnalytics() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    
+    let sportByWeekday = [0,0,0,0,0,0,0];
+    let clean = 0, chaos = 0, mix = 0;
+    let totalSlips = 0, totalDrinks = 0, totalWorkouts = 0;
+    
+    for (let d = 1; d <= daysInMonth; d++) {
+        const ds = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const e = getEntry(ds);
+        const wdIndex = new Date(currentYear, currentMonth, d).getDay() === 0 ? 6 : new Date(currentYear, currentMonth, d).getDay() - 1;
+        
+        if (e.sport) { sportByWeekday[wdIndex]++; totalWorkouts++; }
+        if (e.nicotine) totalSlips++;
+        if (e.alcohol) totalDrinks++;
+        if (e.sport && !e.nicotine && !e.alcohol) clean++;
+        if (!e.sport && e.nicotine && e.alcohol) chaos++;
+        if (e.sport && e.nicotine) mix++;
+    }
+    
+    let streak = 0;
+    let d = new Date();
+    while (true) {
+        const entry = getEntry(dateKey(d));
+        if (entry && entry.sport) { streak++; d.setDate(d.getDate() - 1); }
+        else break;
+    }
+    
+    let bestStreak = 0, tempStreak = 0;
+    for (const ds of Array.from(globalData.keys()).sort()) {
+        if (globalData.get(ds)?.sport) { tempStreak++; bestStreak = Math.max(bestStreak, tempStreak); }
+        else tempStreak = 0;
+    }
+    
+    let completed = 0;
+    for (let dd = 1; dd <= daysInMonth; dd++) {
+        const ds = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+        if (globalData.get(ds)?.sport) completed++;
+    }
+    
+    let maxMonthCount = 0, bestMonthStr = '';
+    const monthCounts = {};
+    for (let [date, e] of globalData.entries()) {
+        if (e.sport) {
+            const monthKey = date.substring(0, 7);
+            monthCounts[monthKey] = (monthCounts[monthKey] || 0) + 1;
+        }
+    }
+    for (let [month, count] of Object.entries(monthCounts)) {
+        if (count > maxMonthCount) { maxMonthCount = count; bestMonthStr = month; }
+    }
+    
+    const lastMonth = new Date(currentYear, currentMonth - 1, 1);
+    const lastMonthKey = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth()+1).padStart(2,'0')}`;
+    const lastMonthCount = monthCounts[lastMonthKey] || 0;
+    const thisMonthCount = monthCounts[`${currentYear}-${String(currentMonth+1).padStart(2,'0')}`] || 0;
+    const diffPercent = lastMonthCount === 0 ? (thisMonthCount > 0 ? 100 : 0) : Math.round(((thisMonthCount - lastMonthCount) / lastMonthCount) * 100);
+    
+    document.getElementById('streakCount').textContent = streak;
+    document.getElementById('bestStreak').textContent = bestStreak;
+    document.getElementById('totalWorkouts').textContent = totalWorkouts;
+    document.getElementById('completionRate').textContent = Math.round((completed / daysInMonth) * 100) + '%';
+    document.getElementById('totalSlips').textContent = totalSlips;
+    document.getElementById('totalDrinks').textContent = totalDrinks;
+    document.getElementById('cleanDays').textContent = clean;
+    document.getElementById('chaosDays').textContent = chaos;
+    document.getElementById('mixDays').textContent = mix;
+    
+    if (bestMonthStr) {
+        const [y, m] = bestMonthStr.split('-');
+        document.getElementById('bestMonth').textContent = `${MONTHS[parseInt(m)-1].slice(0,3)} (${maxMonthCount})`;
+    }
+    
+    document.getElementById('dynamics').innerHTML = diffPercent >= 0 ? `<span style="color:#BBEF1F;">▲ +${diffPercent}%</span>` : `<span style="color:#FF0055;">▼ ${Math.abs(diffPercent)}%</span>`;
+    
+    const weekdayBars = document.getElementById('weekdayBars');
+    weekdayBars.innerHTML = '';
+    const maxWeekday = Math.max(...sportByWeekday, 1);
+    
+    for (let i = 0; i < 7; i++) {
+        const item = document.createElement('div');
+        item.className = 'weekday-bar-item';
+        item.innerHTML = `<span class="weekday-bar-label">${WEEKDAYS_SHORT[i]}</span><div class="weekday-bar-bg"><div class="weekday-bar-fill" style="width:${(sportByWeekday[i]/maxWeekday)*100}%"></div></div><span class="weekday-bar-value">${sportByWeekday[i]}</span>`;
+        weekdayBars.appendChild(item);
+    }
+}
+
+function autoSave() {
+    const details = { press: curEx.press, arms: curEx.arms, pullups: curEx.pullups, legs: curEx.legs, cardio: curEx.cardio, custom: document.getElementById('customEx').value.trim() };
+    for (let ex of userExercises) details[ex] = curEx[ex];
+    const has = Object.values(details).some(v=>v===true) || (details.custom && details.custom.trim());
+    
+    let e = getEntry(dateKey(currentDate));
+    e.sportDetails = details;
+    e.sport = has;
+    e.note = document.getElementById('note').value;
+    e.nicotine = curNicotine;
+    e.nicotineType = curNicotineType;
+    e.alcohol = curAlcohol;
+    
+    setEntry(dateKey(currentDate), e);
+    curSport = has;
+    
+    updateCards();
+    updateDateBlock();
+    updatePie();
+    updateDayProgress();
+    updateHeatmap();
+    updateProgressChart();
+    updateAdvancedAnalytics();
+    updateCharts();
+    
+    const ind = document.getElementById('saveIndicator');
+    ind.classList.add('show');
+    setTimeout(()=>ind.classList.remove('show'), 1000);
+}
+
+function loadDay() {
+    const e = getEntry(dateKey(currentDate));
+    const d = e.sportDetails || {};
+    curEx = { press: d.press||false, arms: d.arms||false, pullups: d.pullups||false, legs: d.legs||false, cardio: d.cardio||false, custom: d.custom||"" };
+    for (let ex of userExercises) curEx[ex] = d[ex]||false;
+    curNicotine = e.nicotine||false;
+    curNicotineType = e.nicotineType || 'cigarette';
+    curAlcohol = e.alcohol||false;
+    curSport = e.sport||false;
+    
+    renderEx();
+    document.getElementById('customEx').value = curEx.custom;
+    document.getElementById('note').value = e.note || '';
+    updateCards();
+    updateDateDisplay();
+    updateDateBlock();
+    updateDayProgress();
+    updatePie();
+    updateAdvancedAnalytics();
+}
+
+function changeDay(delta) {
+    const nd = new Date(currentDate);
+    nd.setDate(currentDate.getDate() + delta);
+    currentDate = nd;
+    loadDay();
+    updateHeatmap();
+    updateProgressChart();
+    updateCharts();
+    haptic();
+}
+
+function toggleNicotine() { curNicotine = !curNicotine; updateCards(); updateDateBlock(); autoSave(); haptic(); }
+function toggleAlcohol() { curAlcohol = !curAlcohol; updateCards(); updateDateBlock(); autoSave(); haptic(); }
+function toggleSportPanel() { document.getElementById('detailsPanel').classList.toggle('show'); haptic(); }
+
+// ===== КАЛЕНДАРЬ МОДАЛ =====
+let modalYear = new Date().getFullYear(), modalMonth = new Date().getMonth();
+
+function renderModal() {
+    const cont = document.getElementById('modalTrackers');
+    cont.innerHTML = '';
+    
+    for (let cat of ['sport', 'nicotine', 'alcohol']) {
+        const block = document.createElement('div');
+        block.className = 'tracker-block';
+        const titles = { sport: 'ТВЁРДЫЙ ВХОД', nicotine: 'НИКОТИН', alcohol: 'ЖИДКИЙ ВАЙБ' };
+        const icons = { sport: 'fa-dumbbell', nicotine: 'fa-smoking', alcohol: 'fa-wine-bottle' };
+        
+        block.innerHTML = `
+            <div class="tracker-block-title"><i class="fas ${icons[cat]}"></i> ${titles[cat]}</div>
+            <div class="weekdays"></div>
+            <div class="mini-calendar" id="modal-cal-${cat}"></div>
+        `;
+        
+        cont.appendChild(block);
+        block.querySelector('.weekdays').innerHTML = WEEKDAYS_SHORT.map(w => `<div class="weekday">${w}</div>`).join('');
+        renderModalCal(cat);
+    }
+    
+    document.getElementById('modalMonthLabel').textContent = `${MONTHS[modalMonth]} ${modalYear}`;
+}
+
+function renderModalCal(cat) {
+    const cont = document.getElementById(`modal-cal-${cat}`);
+    cont.innerHTML = '';
+    
+    const first = new Date(modalYear, modalMonth, 1);
+    let offset = first.getDay() - 1;
+    if (offset < 0) offset = 6;
+    
+    const days = new Date(modalYear, modalMonth + 1, 0).getDate();
+    const prevDays = new Date(modalYear, modalMonth, 0).getDate();
+    
+    const today = new Date();
+    const todayKey = dateKey(today);
+    
+    for (let i = 0; i < 42; i++) {
+        let day, isCurrentMonth = true, year = modalYear, month = modalMonth;
+        
+        if (i < offset) {
+            isCurrentMonth = false;
+            day = prevDays - (offset - i - 1);
+            month--;
+            if (month < 0) { month = 11; year--; }
+        } else if (i >= offset + days) {
+            isCurrentMonth = false;
+            day = i - (offset + days) + 1;
+            month++;
+            if (month > 11) { month = 0; year++; }
+        } else {
+            day = i - offset + 1;
+        }
+        
+        const tile = document.createElement('div');
+        tile.className = 'day-tile';
+        
+        if (!isCurrentMonth) tile.classList.add('empty');
+        
+        const ds = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        
+        if (cat === 'sport') tile.classList.toggle('active', getEntry(ds).sport);
+        if (cat === 'nicotine') tile.classList.toggle('active', getEntry(ds).nicotine);
+        if (cat === 'alcohol') tile.classList.toggle('active', getEntry(ds).alcohol);
+        
+        if (ds === todayKey) tile.classList.add('today');
+        
+        tile.textContent = day;
+        
+        if (isCurrentMonth) {
+            tile.onclick = () => {
+                currentDate = new Date(year, month, day);
+                loadDay();
+                closeModal();
+                haptic();
+            };
+        }
+        
+        cont.appendChild(tile);
+    }
+}
+
+function changeModalMonth(delta) {
+    modalMonth += delta;
+    if (modalMonth > 11) { modalMonth = 0; modalYear++; }
+    if (modalMonth < 0) { modalMonth = 11; modalYear--; }
+    renderModal();
+    haptic();
+}
+
+function openModal() {
+    modalYear = currentDate.getFullYear();
+    modalMonth = currentDate.getMonth();
+    renderModal();
+    document.getElementById('monthModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+    haptic();
+}
+
+function closeModal() {
+    document.getElementById('monthModal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// ===== НАСТРОЙКИ =====
+function renderExList() {
+    const c = document.getElementById('customExercisesList');
+    c.innerHTML = '';
+    for (let ex of userExercises) {
+        const div = document.createElement('div');
+        div.className = 'custom-ex-item';
+        div.innerHTML = `<span><i class="fas fa-tag"></i> ${ex}</span><span class="delete-ex" data-ex="${ex}"><i class="fas fa-trash"></i></span>`;
+        c.appendChild(div);
+    }
+    document.querySelectorAll('.delete-ex').forEach(btn => {
+        btn.onclick = () => {
+            userExercises = userExercises.filter(e => e !== btn.dataset.ex);
+            saveData();
+            renderExList();
+            loadDay();
+            haptic();
+        };
+    });
+}
+
+function openSettings() {
+    renderExList();
+    renderIconPreview();
+    document.getElementById('settingsModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+    haptic();
+}
+
+function closeSettings() {
+    document.getElementById('settingsModal').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function addExercise() {
+    const inp = document.getElementById('newExerciseName');
+    const name = inp.value.trim();
+    if (name && !userExercises.includes(name)) {
+        userExercises.push(name);
+        saveData();
+        renderExList();
+        loadDay();
+        inp.value = '';
+        haptic();
+    }
+}
+
+function renderIconPreview() {
+    const c = document.getElementById('iconPreview');
+    c.innerHTML = '';
+    for (let icon of ICONS) {
+        const div = document.createElement('div');
+        div.className = 'icon-option' + (appIcon === icon.id ? ' selected' : '');
+        div.innerHTML = `<i class="fas ${icon.char}"></i>`;
+        div.onclick = () => {
+            appIcon = icon.id;
+            localStorage.setItem('antihero_app_icon', icon.id);
+            updateAppIcon();
+            renderIconPreview();
+            haptic();
+        };
+        c.appendChild(div);
+    }
+}
+
+function toggleNotifications() {
+    notifEnabled = !notifEnabled;
+    localStorage.setItem('antihero_notif', notifEnabled);
+    const t = document.getElementById('notificationToggle');
+    if (notifEnabled) t.classList.add('active');
+    else t.classList.remove('active');
+    haptic();
+}
+
+function exportData() {
+    const data = {
+        version: '2.0',
+        exportDate: new Date().toISOString(),
+        entries: Object.fromEntries(globalData),
+        exercises: userExercises,
+        settings: { appIcon, notif: notifEnabled }
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `antihero_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+
+function importData(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.entries) {
+                for (const [k, v] of Object.entries(data.entries)) globalData.set(k, v);
+                saveData();
+            }
+            if (data.exercises) {
+                userExercises = data.exercises;
+                saveData();
+            }
+            alert('Данные загружены!');
+            setTimeout(() => location.reload(), 1000);
+        } catch(err) {
+            alert('Ошибка импорта');
+        }
+    };
+    reader.readAsText(file);
+}
+
+function clearData() {
+    if (confirm('Удалить все данные?')) {
+        localStorage.removeItem('antihero_main_data');
+        localStorage.removeItem('antihero_user_exercises');
+        location.reload();
+    }
+}
+
+function haptic() { if ('vibrate' in navigator) navigator.vibrate(10); }
+
+// ===== ИНИЦИАЛИЗАЦИЯ =====
+loadData();
+updateAppIcon();
+loadDay();
+updateHeatmap();
+updateProgressChart();
+updatePie();
+
+requestAnimationFrame(() => {
+    initCharts();
+    updateCharts();
+});
+
+window.addEventListener('resize', () => {
+    if (weekChart) weekChart.resize();
+    if (monthChart) monthChart.resize();
+});
+
+if (videoCollapsed) {
+    document.getElementById('videoContent').classList.add('collapsed');
+    document.getElementById('videoToggle').classList.add('collapsed');
+}
+
+if (notifEnabled) {
+    document.getElementById('notificationToggle').classList.add('active');
+}
+
+// ===== ОБРАБОТЧИКИ =====
+document.getElementById('prevDayBtn').onclick = () => changeDay(-1);
+document.getElementById('nextDayBtn').onclick = () => changeDay(1);
+document.getElementById('todayBtn').onclick = () => openModal();
+document.getElementById('dateBlock').onclick = () => openModal();
+document.getElementById('sportCard').onclick = toggleSportPanel;
+document.getElementById('nicotineCard').onclick = toggleNicotine;
+document.getElementById('alcoholCard').onclick = toggleAlcohol;
+document.getElementById('settingsBtn').onclick = openSettings;
+document.getElementById('closeSettingsBtn').onclick = closeSettings;
+document.getElementById('modalPrevMonth').onclick = () => changeModalMonth(-1);
+document.getElementById('modalNextMonth').onclick = () => changeModalMonth(1);
+document.getElementById('closeModalBtn').onclick = closeModal;
+document.getElementById('addExerciseBtn').onclick = addExercise;
+document.getElementById('customEx').oninput = autoSave;
+document.getElementById('note').oninput = autoSave;
+document.getElementById('notificationToggle').onclick = toggleNotifications;
+document.getElementById('exportDataBtn').onclick = exportData;
+document.getElementById('importDataBtn').onclick = () => document.getElementById('importFileInput').click();
+document.getElementById('importFileInput').onchange = (e) => {
+    if (e.target.files[0]) importData(e.target.files[0]);
+};
+document.getElementById('clearDataBtn').onclick = clearData;
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') changeDay(-1);
+    if (e.key === 'ArrowRight') changeDay(1);
+    if (e.key === 'Escape') { closeModal(); closeSettings(); closeVideo(); }
+});
+</script>
+</body>
+</html>
+
+
